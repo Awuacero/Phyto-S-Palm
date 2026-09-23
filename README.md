@@ -1,6 +1,6 @@
 ## License and Copyright
 
-**Copyright (c) 2026 Andrea Román Mateo, Antonio Castro, et al. All Rights Reserved.**
+**Copyright (c) 2026 Román-Mateo A., Castro, A.J., et al. All Rights Reserved.**
 
 This repository and its contents are currently closed-source. The code and web application are provided publicly for peer-review and visualization purposes only, in association with an unpublished manuscript. 
 
@@ -10,13 +10,13 @@ Once the associated scientific paper is officially published, this repository wi
 
 *Note: This project integrates third-party components (MusiteDeep) which are distributed under the MIT License. See the `CREDITS.md` file for full details and attributions.*
 
-# Plant-S-Acyl-Predictor 🌿
+# Phyto-S-Palm 🌿
 
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://plant-s-acyl-predictor.streamlit.app/)
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://phyto-s-palm.streamlit.app/)
 
 A biophysical pre-filtering pipeline (UHS & Kyte-Doolittle) integrated with an optimized MusiteDeep ensemble model for plant S-acylation prediction.
 
-**🌐 Try the Web App:** [https://plant-s-acyl-predictor.streamlit.app/](https://plant-s-acyl-predictor.streamlit.app/)
+**🌐 Try the Web App:** [https://phyto-s-palm.streamlit.app/](https://phyto-s-palm.streamlit.app/)
 
 ## Overview
 
@@ -37,7 +37,7 @@ Built as an interactive Streamlit application, this pipeline executes a multi-la
 
 The easiest way to use the pipeline is through our hosted Streamlit application. No installation is required.
 
-1. Navigate to [Plant-S-Acyl-Predictor on Streamlit](https://plant-s-acyl-predictor.streamlit.app/).
+1. Navigate to [Phyto-S-Palm on Streamlit](https://phyto-s-palm.streamlit.app/).
 2. Upload your `.fasta` file.
 3. Adjust the sliding window size and the maximum hydrophobicity cutoffs (KD and UHS).
 4. Download the filtered sequence or run the deep learning prediction directly.
@@ -50,5 +50,5 @@ If you prefer to run this pipeline locally, you will need Python installed along
 
 1. Clone this repository:
    ```bash
-   git clone [https://github.com/tu-usuario/Plant-S-Acyl-Predictor.git](https://github.com/tu-usuario/Plant-S-Acyl-Predictor.git)
-   cd Plant-S-Acyl-Predictor
+   git clone [https://github.com/tu-usuario/Phyto-S-Palm.git](https://github.com/tu-usuario/Phyto-S-Palm.git)
+   cd Phyto-S-Palm
