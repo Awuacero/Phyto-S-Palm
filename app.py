@@ -7,55 +7,22 @@ import subprocess
 import tempfile
 import sys
 
-st.set_page_config(layout="wide", page_title="Phyto-S-Palm")
-
-# --- Encabezado y Descripción ---
-st.title("🍃Phyto-*S*-Palm")
-st.markdown("### **An interactive bioinformatics tool to predict S-acylation sites in plant proteomes.**")
-
-st.markdown("""
-Phyto-*S*-Palm automates and facilitates the computational workflow for S-acylation site prediction. It processes FASTA proteomes by filtering cysteine-lacking sequences and evaluating biophysical surface accessibility using adjustable Kyte-Doolittle and Unified Hydrophobicity (UHS) scales. For the deep learning inference phase, a modernized MusiteDeep core (CNN and CapsNet) was migrated to TensorFlow's `tf_keras` with tensor-level optimizations. The tool accepts dynamic decision thresholds (defaulting to a stringent 0.65 cutoff). The modified source code and plant-trained models are publicly hosted on [GitHub](https://github.com/Awuacero/Phyto-S-Palm), and the platform is freely accessible at [https://phyto-s-palm.streamlit.app/](https://phyto-s-palm.streamlit.app/).
-""")
-
+st.set_page_config(layout="wide", page_title="CysFilter & MusiteDeep Pipeline")
+st.title("🧬 Plant S-Acylation Pipeline: CysFilter & MusiteDeep Integration")
 st.warning("⚠️ **Notice: Under Peer Review**\n\nThis tool is part of an unpublished scientific manuscript. The methodology, underlying code, and pipeline are under Copyright (c) 2026. All rights reserved. Please do not distribute.")
-st.markdown("---")
-
-# --- About Us ---
-st.header("About us")
-st.markdown("""
-Phyto-*S*-Palm aims to provide interactive bioinformatics tools to predict S-acylation sites in plant proteomes. The current version evaluates biophysical cysteine exposure and leverages custom deep learning architectures optimized for high-confidence target discovery in plants.
-
-The tool has been developed by researchers from the [Estación Experimental del Zaidín (EEZ)-CSIC](https://www.eez.csic.es/) and the [Universidad de Málaga (UMA)](https://www.uma.es/), and [Instituto de Hortofruticultura Subtropical y Mediterránea "La Mayora" (IHSM-UMA-CSIC)](https://www.ihsm.uma-csic.es/).
-
-Please, Contact us if you have any question or request: 📧 [andrea.roman@eez.csic.es](mailto:andrea.roman@eez.csic.es)
-""")
 st.markdown("---")
 
 # --- 1. Sequence Filtering ---
 st.header("1. Sequence Filtering")
-st.markdown("Upload a FASTA file (`.fasta` or `.fa`) or use our sample sequence to discard sequences without Cysteine ('C').")
+st.markdown("Upload a FASTA file (`.fasta` or `.fa`) to discard sequences without Cysteine ('C').")
 
-col_sample, col_upload = st.columns([1, 2])
-with col_sample:
-    use_sample = st.checkbox("Use sample FASTA sequence")
-with col_upload:
-    uploaded_file = st.file_uploader("Choose a FASTA file", type=["fasta", "fa"], disabled=use_sample)
+uploaded_file = st.file_uploader("Choose a FASTA file", type=["fasta", "fa"])
 
 filtered_sequences = []
-sequences = []
-
-# Carga directa desde el archivo físico
-if use_sample:
-    try:
-        with open("sample.fasta", "r") as handle:
-            sequences = list(SeqIO.parse(handle, "fasta"))
-    except FileNotFoundError:
-        st.error("No se encontró el archivo 'sample.fasta'. Asegúrate de que esté subido en la misma carpeta de tu repositorio en GitHub.")
-elif uploaded_file is not None:
+if uploaded_file is not None:
     stringio = io.StringIO(uploaded_file.getvalue().decode("utf-8"))
     sequences = list(SeqIO.parse(stringio, "fasta"))
 
-if sequences:
     for seq_record in sequences:
         if 'C' in str(seq_record.seq).upper():
             filtered_sequences.append(seq_record)
@@ -69,7 +36,7 @@ if sequences:
     else:
         st.warning("No sequences containing Cysteine were found.")
 
-st.markdown("---")
+    st.markdown("---")
 
 # --- 2. Cys Biophysical Accessibility Analysis ---
 st.header("2. Cysteine Biophysical Accessibility Analysis")
@@ -173,6 +140,7 @@ if filtered_sequences:
             st.header("4. MusiteDeep Prediction Pipeline")
             st.markdown("Generate a refined FASTA file containing only proteins that passed the biophysical filter and run deep learning inference for S-palmitoylation.")
 
+            # NUEVO: Control interactivo del Cutoff
             col_cutoff, _ = st.columns([1, 1])
             with col_cutoff:
                 musite_cutoff = st.slider(
@@ -184,8 +152,10 @@ if filtered_sequences:
                     help="Based on our benchmarking, we recommend a stringent cutoff of 0.65 to minimize false positives in plant proteomes."
                 )
 
+            # Filter original sequences to keep only those with valid exposed cysteines
             passing_sequences = [seq for seq in filtered_sequences if seq.id in valid_protein_ids]
 
+            # Allow user to download the filtered FASTA
             fasta_io = io.StringIO()
             SeqIO.write(passing_sequences, fasta_io, "fasta")
             fasta_str = fasta_io.getvalue()
@@ -199,6 +169,7 @@ if filtered_sequences:
 
             if st.button("🚀 Run MusiteDeep Prediction"):
                 with st.spinner("Running deep learning models (CNN & CapsNet)... Please wait."):
+                    # Create temporary files for safe execution
                     with tempfile.NamedTemporaryFile(delete=False, suffix=".fasta", mode="w") as tmp_input:
                         tmp_input.write(fasta_str)
                         tmp_input_path = tmp_input.name
@@ -206,6 +177,7 @@ if filtered_sequences:
                     output_prefix = tempfile.mktemp(prefix="musite_out_")
 
                     try:
+                        # Command execution - SE AÑADE EL ARGUMENTO -cutoff
                         cmd = [
                             sys.executable, "predict_multi_batch.py",
                             "-input", tmp_input_path,
@@ -243,32 +215,24 @@ if filtered_sequences:
                             st.text(e.stderr)
                     
                     finally:
+                        # Clean up temporary input file
                         if os.path.exists(tmp_input_path):
                             os.remove(tmp_input_path)
 
     else:
         st.info("No Cysteines found matching the biophysical parameters.")
+
 else:
-    st.info("Please upload a FASTA file or check the sample sequence to begin processing.")
+    st.info("Please upload a FASTA file to begin processing.")
 
 st.markdown("---")
 
-# --- Funding ---
-st.header("Funding")
-st.markdown("This work was funded by the Spanish Ministry of Science and Innovation (MICINN/AEI) through EU/ERDF-cofinanced grants PID2020-113324GB-100, … and … , and by CSIC (grant no. 2025AEP052).")
-st.markdown("---")
-
-# --- How to cite ---
-st.header("How to cite Phyto-S-Palm")
-st.markdown("Please, when using this web site or its data, cite us using the reference:")
-st.markdown("> Román Mateo, A., Gallego, F., Santos, J., Alché, J. D., Claros, G., Veredas, F. J., & Castro, A. J (2026). *Integrative Computational and Experimental S-Acylation Profiling Reveals a Conserved Pollen S-Acylome in Angiosperms*. (Unpublished manuscript).")
-
-st.markdown("<p align='center'><img src='https://raw.githubusercontent.com/Awuacero/Phyto-S-Palm/main/logos.jpg' alt='Institution Logos' style='max-width: 100%; width: 100%; height: auto;'/></p>", unsafe_allow_html=True)
-st.markdown("---")
-
-# --- Bibliography ---
-st.header("Bibliography")
+# --- 5. Bibliography & References ---
+st.header("5. References & Bibliography")
 st.markdown("""
+**Scientific Background & Methodology:**
+* Román Mateo, A., Gallego, F., Santos, J., Alché, J. D., Claros, G., Veredas, F. J., & Castro, A. (2026). *Integrative Computational and Experimental S-Acylation Profiling Reveals a Conserved Pollen S-Acylome in Angiosperms*. (Unpublished manuscript).
+
 **Biophysical Scales (Surface Accessibility):**
 * Koehler, J., Woetzel, N., Staritzbichler, R., Sanders, C. R., & Meiler, J. (2009). A unified hydrophobicity scale for multispan membrane proteins. *Proteins*, 76(1), 13-29. [https://doi.org/10.1002/prot.22315](https://doi.org/10.1002/prot.22315)
 * Kyte, J., & Doolittle, R. F. (1982). A simple method for displaying the hydropathic character of a protein. *Journal of Molecular Biology*, 157(1), 105–132. [https://doi.org/10.1016/0022-2836(82)90515-0](https://doi.org/10.1016/0022-2836(82)90515-0)
