@@ -11,7 +11,6 @@ st.set_page_config(layout="wide", page_title="Phyto-S-Palm")
 
 # --- Encabezado y Descripción ---
 st.title("🍃Phyto-*S*-Palm")
-# Cambio: Se ha añadido ### para aumentar el tamaño de la fuente
 st.markdown("### **An interactive bioinformatics tool to predict S-acylation sites in plant proteomes.**")
 
 st.markdown("""
@@ -36,35 +35,22 @@ st.markdown("---")
 st.header("1. Sequence Filtering")
 st.markdown("Upload a FASTA file (`.fasta` or `.fa`) or use our sample sequence to discard sequences without Cysteine ('C').")
 
-# Funcionalidad del FASTA de prueba
 col_sample, col_upload = st.columns([1, 2])
 with col_sample:
     use_sample = st.checkbox("Use sample FASTA sequence")
 with col_upload:
     uploaded_file = st.file_uploader("Choose a FASTA file", type=["fasta", "fa"], disabled=use_sample)
 
-# Cambio: Se han fusionado los dos encabezados del Sample_Protein_3 en una sola línea
-sample_fasta = """
->Sample_Protein_1_Multiple_Cys
-MAPSPIIFSVLLLFIFSLSSSAQTPFRPKALLLPVTKDQSTLQYTTVINQRTPLVPASVVFDLGGRELWVDCDKGYVSSTYQSPRCNSAVCSRAGSTSCG
-TCFSPPRPGCSNNTCGGIPDNTVTGTATSGEFALDVVSIQSTNGSNPGRVVKIPNLIFDCGATFLLKGLAKGTVGMAGMGRHNIGLPSQFAAAFSFHRKF
-AVCLTSGKGVAFFGNGPYVFLPGIQISSLQTTPLLINPVSTASAFSQGEKSSEYFIGVTAIQIVEKTVPINPTLLKINASTGIGGTKISSVNPYTVLESS
-IYNAFTSEFVKQAAARSIKRVASVKPFGACFSTKNVGVTRLGYAVPEIELVLHSKDVVWRIFGANSMVSVSDDVICLGFVDGGVNARTSVVIGGFQLEDN
-LIEFDLASNKFGFSSTLLGRQTNCANFNFTSTA
->Sample_Protein_2_No_Cys
-MTDDRVYPASKPPAIVGGGAPTTNPTFPANKAQLYNANRPAYRPPAGRRRTSHTRGAAARAAAWTIFVIILLLLIVAAASAVVYLIYRPQRPSFTVSELKISTLNFTSAVRLTTAISLSVIARNPNKNVGFIYDVTDITLYKASTGGDDDVVIGKGTIAAFSHGKKNTTTLRSTIGSPPDELDEISAGKLKGDLKAKKAVAIKIVLNSKVKVKMGALKTPKSGIRVTEGIKVVAPTGKKATTATTSAAKAKVDPRFKIWKITF
->Sample_Protein_3_No_Acylated | AT1G06530.1 | Symbols: PMD2 | peroxisomal and mitochondrial division factor 2 | chr1:2001625-2002596 FORWARD LENGTH=323
-MAEERSLNGEATGQDDESFFDSDQQGDDGKSTELNQKIGDLESQNQELARDNDAINRKIESLTAEIEELRGAESKAKRKMGEMEREIDKSDEERKVLEAI
-ASRASELETEVARLQHELITARTEGEEATAEAEKLRSEISQKGCGGIEELEKEVAGLRTVKEENEKRMKELESKLGALEVKELDEKNKKFRAEEEMREKID
-NKEKEVHDLKEKIKSLESDVAKGKTELQKWITEKMVVEDSLKDSEKKVVALESEIVELQKQLDDAEKMINGLKNVVEEPLNGIEFKSWSPNVTAVGSGGA
-VAAVAVAVAGAAVVYIYHSRRV"""
-
 filtered_sequences = []
 sequences = []
 
+# Carga directa desde el archivo físico
 if use_sample:
-    stringio = io.StringIO(sample_fasta)
-    sequences = list(SeqIO.parse(stringio, "fasta"))
+    try:
+        with open("sample.fasta", "r") as handle:
+            sequences = list(SeqIO.parse(handle, "fasta"))
+    except FileNotFoundError:
+        st.error("No se encontró el archivo 'sample.fasta'. Asegúrate de que esté subido en la misma carpeta de tu repositorio en GitHub.")
 elif uploaded_file is not None:
     stringio = io.StringIO(uploaded_file.getvalue().decode("utf-8"))
     sequences = list(SeqIO.parse(stringio, "fasta"))
@@ -277,7 +263,6 @@ st.header("How to cite Phyto-S-Palm")
 st.markdown("Please, when using this web site or its data, cite us using the reference:")
 st.markdown("> Román Mateo, A., Gallego, F., Santos, J., Alché, J. D., Claros, G., Veredas, F. J., & Castro, A. J (2026). *Integrative Computational and Experimental S-Acylation Profiling Reveals a Conserved Pollen S-Acylome in Angiosperms*. (Unpublished manuscript).")
 
-# Cambio: Etiqueta de la imagen actualizada para utilizar un ancho y calidad máximos 
 st.markdown("<p align='center'><img src='https://raw.githubusercontent.com/Awuacero/Phyto-S-Palm/main/logos.jpg' alt='Institution Logos' style='max-width: 100%; width: 100%; height: auto;'/></p>", unsafe_allow_html=True)
 st.markdown("---")
 
