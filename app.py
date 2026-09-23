@@ -8,7 +8,7 @@ import tempfile
 import sys
 
 st.set_page_config(layout="wide", page_title="CysFilter & MusiteDeep Pipeline")
-st.title("🧬 Plant S-Acylation Pipeline: CysFilter & MusiteDeep Integration")
+st.title(" PythoPalmPred")
 st.warning("⚠️ **Notice: Under Peer Review**\n\nThis tool is part of an unpublished scientific manuscript. The methodology, underlying code, and pipeline are under Copyright (c) 2026. All rights reserved. Please do not distribute.")
 st.markdown("---")
 
@@ -79,7 +79,7 @@ if filtered_sequences:
 
     # --- 3. Intersection of Accessibility Criteria ---
     st.header("3. High-Confidence Accessibility Filtering")
-    st.markdown("Only Cysteines meeting **BOTH** exposure cutoffs (≤ Cutoff) are preserved.")
+    st.markdown("Only Cysteines meeting **BOTH** exposure cutoffs ($\le$ Cutoff) are preserved.")
 
     results = []
     valid_protein_ids = set()
@@ -140,6 +140,7 @@ if filtered_sequences:
             st.header("4. MusiteDeep Prediction Pipeline")
             st.markdown("Generate a refined FASTA file containing only proteins that passed the biophysical filter and run deep learning inference for S-palmitoylation.")
 
+            # NUEVO: Control interactivo del Cutoff
             col_cutoff, _ = st.columns([1, 1])
             with col_cutoff:
                 musite_cutoff = st.slider(
@@ -151,8 +152,10 @@ if filtered_sequences:
                     help="Based on our benchmarking, we recommend a stringent cutoff of 0.65 to minimize false positives in plant proteomes."
                 )
 
+            # Filter original sequences to keep only those with valid exposed cysteines
             passing_sequences = [seq for seq in filtered_sequences if seq.id in valid_protein_ids]
 
+            # Allow user to download the filtered FASTA
             fasta_io = io.StringIO()
             SeqIO.write(passing_sequences, fasta_io, "fasta")
             fasta_str = fasta_io.getvalue()
@@ -166,6 +169,7 @@ if filtered_sequences:
 
             if st.button("🚀 Run MusiteDeep Prediction"):
                 with st.spinner("Running deep learning models (CNN & CapsNet)... Please wait."):
+                    # Create temporary files for safe execution
                     with tempfile.NamedTemporaryFile(delete=False, suffix=".fasta", mode="w") as tmp_input:
                         tmp_input.write(fasta_str)
                         tmp_input_path = tmp_input.name
@@ -173,6 +177,7 @@ if filtered_sequences:
                     output_prefix = tempfile.mktemp(prefix="musite_out_")
 
                     try:
+                        # Command execution - SE AÑADE EL ARGUMENTO -cutoff
                         cmd = [
                             sys.executable, "predict_multi_batch.py",
                             "-input", tmp_input_path,
@@ -210,6 +215,7 @@ if filtered_sequences:
                             st.text(e.stderr)
                     
                     finally:
+                        # Clean up temporary input file
                         if os.path.exists(tmp_input_path):
                             os.remove(tmp_input_path)
 
