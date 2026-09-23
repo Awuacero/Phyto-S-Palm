@@ -11,7 +11,8 @@ st.set_page_config(layout="wide", page_title="Phyto-S-Palm")
 
 # --- Encabezado y Descripción ---
 st.title("🍃Phyto-*S*-Palm")
-st.markdown("**An interactive bioinformatics tool to predict S-acylation sites in plant proteomes.**")
+# Cambio: Se ha añadido ### para aumentar el tamaño de la fuente
+st.markdown("### **An interactive bioinformatics tool to predict S-acylation sites in plant proteomes.**")
 
 st.markdown("""
 Phyto-*S*-Palm automates and facilitates the computational workflow for S-acylation site prediction. It processes FASTA proteomes by filtering cysteine-lacking sequences and evaluating biophysical surface accessibility using adjustable Kyte-Doolittle and Unified Hydrophobicity (UHS) scales. For the deep learning inference phase, a modernized MusiteDeep core (CNN and CapsNet) was migrated to TensorFlow's `tf_keras` with tensor-level optimizations. The tool accepts dynamic decision thresholds (defaulting to a stringent 0.65 cutoff). The modified source code and plant-trained models are publicly hosted on [GitHub](https://github.com/Awuacero/Phyto-S-Palm), and the platform is freely accessible at [https://phyto-s-palm.streamlit.app/](https://phyto-s-palm.streamlit.app/).
@@ -42,6 +43,7 @@ with col_sample:
 with col_upload:
     uploaded_file = st.file_uploader("Choose a FASTA file", type=["fasta", "fa"], disabled=use_sample)
 
+# Cambio: Se han fusionado los dos encabezados del Sample_Protein_3 en una sola línea
 sample_fasta = """
 >Sample_Protein_1_Multiple_Cys
 MAPSPIIFSVLLLFIFSLSSSAQTPFRPKALLLPVTKDQSTLQYTTVINQRTPLVPASVVFDLGGRELWVDCDKGYVSSTYQSPRCNSAVCSRAGSTSCG
@@ -51,8 +53,7 @@ IYNAFTSEFVKQAAARSIKRVASVKPFGACFSTKNVGVTRLGYAVPEIELVLHSKDVVWRIFGANSMVSVSDDVICLGFV
 LIEFDLASNKFGFSSTLLGRQTNCANFNFTSTA
 >Sample_Protein_2_No_Cys
 MTDDRVYPASKPPAIVGGGAPTTNPTFPANKAQLYNANRPAYRPPAGRRRTSHTRGAAARAAAWTIFVIILLLLIVAAASAVVYLIYRPQRPSFTVSELKISTLNFTSAVRLTTAISLSVIARNPNKNVGFIYDVTDITLYKASTGGDDDVVIGKGTIAAFSHGKKNTTTLRSTIGSPPDELDEISAGKLKGDLKAKKAVAIKIVLNSKVKVKMGALKTPKSGIRVTEGIKVVAPTGKKATTATTSAAKAKVDPRFKIWKITF
->Sample_Protein_3_No_Acylated
->AT1G06530.1 | Symbols: PMD2 | peroxisomal and mitochondrial division factor 2 | chr1:2001625-2002596 FORWARD LENGTH=323
+>Sample_Protein_3_No_Acylated | AT1G06530.1 | Symbols: PMD2 | peroxisomal and mitochondrial division factor 2 | chr1:2001625-2002596 FORWARD LENGTH=323
 MAEERSLNGEATGQDDESFFDSDQQGDDGKSTELNQKIGDLESQNQELARDNDAINRKIESLTAEIEELRGAESKAKRKMGEMEREIDKSDEERKVLEAI
 ASRASELETEVARLQHELITARTEGEEATAEAEKLRSEISQKGCGGIEELEKEVAGLRTVKEENEKRMKELESKLGALEVKELDEKNKKFRAEEEMREKID
 NKEKEVHDLKEKIKSLESDVAKGKTELQKWITEKMVVEDSLKDSEKKVVALESEIVELQKQLDDAEKMINGLKNVVEEPLNGIEFKSWSPNVTAVGSGGA
@@ -276,8 +277,8 @@ st.header("How to cite Phyto-S-Palm")
 st.markdown("Please, when using this web site or its data, cite us using the reference:")
 st.markdown("> Román Mateo, A., Gallego, F., Santos, J., Alché, J. D., Claros, G., Veredas, F. J., & Castro, A. J (2026). *Integrative Computational and Experimental S-Acylation Profiling Reveals a Conserved Pollen S-Acylome in Angiosperms*. (Unpublished manuscript).")
 
-# Logo centrado (Usando HTML en Markdown para centrarlo y llamándolo desde la rama main de Github)
-st.markdown("<p align='center'><img src='https://raw.githubusercontent.com/Awuacero/Phyto-S-Palm/main/logos.jpg' alt='Institution Logos' width='600'/></p>", unsafe_allow_html=True)
+# Cambio: Etiqueta de la imagen actualizada para utilizar un ancho y calidad máximos 
+st.markdown("<p align='center'><img src='https://raw.githubusercontent.com/Awuacero/Phyto-S-Palm/main/logos.jpg' alt='Institution Logos' style='max-width: 100%; width: 100%; height: auto;'/></p>", unsafe_allow_html=True)
 st.markdown("---")
 
 # --- Bibliography ---
